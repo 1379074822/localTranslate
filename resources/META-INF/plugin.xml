@@ -1,0 +1,41 @@
+<idea-plugin>
+  <id>com.your.company.unique.plugin.id</id>
+  <name>translate</name>
+  <version>1.0</version>
+  <vendor email="lyc@wangsu.com" url="">wangsu</vendor>
+
+  <description>内网翻译</description>
+
+  <change-notes>
+    初版
+  </change-notes>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="173.0"/>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products
+  <depends>com.intellij.modules.lang</depends>
+  -->
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Add your extensions here -->
+    <postStartupActivity implementation="EnglishRead"></postStartupActivity>
+    <postStartupActivity implementation="ChineseRead" ></postStartupActivity>
+  </extensions>
+
+  <actions>
+    <!-- Add your actions here -->
+    <action id="Translate" class="TranslateAction" text="Translate" description="Translate">
+      <keyboard-shortcut keymap="$default" first-keystroke="shift alt O"/>
+    </action>
+    <action id="DialogTranslate" class="DialogTranslate" text="DialogTranslate" description="DialogTranslate">
+      <keyboard-shortcut keymap="$default" first-keystroke="shift alt Y"/>
+    </action>
+    <action id="CrazyNameAction" class="CrazyNameAction" text="CrazyNameAction" description="CrazyNameAction">
+      <keyboard-shortcut keymap="$default" first-keystroke="shift alt U"/>
+    </action>
+  </actions>
+
+</idea-plugin>
