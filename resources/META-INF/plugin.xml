@@ -4,10 +4,16 @@
   <version>1.0</version>
   <vendor email="lyc@wangsu.com" url="">wangsu</vendor>
 
-  <description>内网翻译</description>
+  <description>
+      <![CDATA[
+      alt+shift+o  翻译选中文字  中英文皆可 <br/>
+      alt+shift+y  dialog输入翻译  中英文皆可<br/>
+      alt+shift+u  起名器  输入中文单词 以空格" " 隔开<br/>
+]]>
+  </description>
 
   <change-notes>
-    初版
+    起名器初具规模版
   </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->

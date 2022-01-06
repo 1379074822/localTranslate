@@ -1,5 +1,6 @@
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -8,17 +9,17 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Optional;
+import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class CrazyNameDialog extends DialogWrapper {
 
     private JPanel north = new JPanel();
 
-    private JPanel center = new JPanel();
+    private JScrollPane center = new com.intellij.ui.components.JBScrollPane();
 
-    private JTextField input = new JTextField();
+    public JTextField input = new JTextField();
 
     private JTextArea after = new JTextArea("");
 
@@ -30,32 +31,56 @@ public class CrazyNameDialog extends DialogWrapper {
                         after.setText("");
                         String key = input.getText().toLowerCase().trim();
                         String[] split = key.split(" ");
-                        StringBuilder sb = new StringBuilder();
-                        boolean flag = false;
-                        for (String s : split) {
+                        if(split.length<1){
+                            return;
+                        }
+                        List<List<String>> lists = new ArrayList<>();
+                        for (int i = 0; i < split.length; i++) {
+                            List<String> strings = new ArrayList<>();
+                            String s = split[i];
                             if(StringUtils.isEmpty(s)){
                                 continue;
                             }
                             String value = ChineseRead.map.get(s);
+                            if(StringUtils.isEmpty(value)){
+                                strings.add("xxxx");
+                                lists.add(strings);
+                                continue;
+                            }
                             String[] split1 = value.split(",");
-                            Optional<String> min = Arrays.stream(split1).min(Comparator.comparingInt(String::length));
-                            if(min.isPresent()){
-                                String s1 = min.get().replaceAll("[^a-zA-Z ]", "");
+                            List<String> collect = Arrays.stream(split1).map(x->{
+                                if(x.contains("\\[")&&x.contains("\\]")){
+                                    return x.split("\\[")[0];
+                                }
+                                return x;
+                            }).sorted(Comparator.comparingInt(String::length)).collect(Collectors.toList());
+                            int max = 0;
+                            if(split.length<4){
+                                max = 3;
+                            }else{
+                                max = 2;
+                            }
+                            for (int j = 0; j < collect.size() && j < max; j++) {
+                                String ss = collect.get(j);
+                                String s1 = ss.replaceAll("[^a-zA-Z ]", "");
                                 String s2 = s1.toLowerCase().trim();
                                 String[] s3 = s2.split(" ");
-                                for (String ss : s3) {
-                                    String s4 = ss;
-                                    if(flag){
-                                         s4 = toBig(ss);
+                                for (String sss : s3) {
+                                    String s4 = sss;
+                                    if(i!=0){
+                                        s4 = toBig(sss);
                                     }
-                                    sb.append(s4);
-                                    flag = true;
+                                    strings.add(s4);
                                 }
-                            }else{
-                                sb.append("xxxx");
                             }
+                            lists.add(strings);
                         }
-                        after.setText(sb.toString());
+
+                        List<String> di = new ArrayList<>(lists.get(0));
+                        for (int i = 1; i < lists.size(); i++) {
+                            di = dicarer(di,lists.get(i));
+                        }
+                        after.setText(StringUtils.join(di," | "));
                         initCenter();
                     }
                 } catch (Exception e1) {
@@ -82,6 +107,16 @@ public class CrazyNameDialog extends DialogWrapper {
 
             }
         });
+    }
+
+    private List<String> dicarer(List<String> s1,List<String> s2){
+        List<String> list = new ArrayList<>();
+        for (String s : s1) {
+            for (String ss : s2) {
+                list.add(s+ss);
+            }
+        }
+        return list;
     }
 
     public static String toBig(String str) {
@@ -141,13 +176,14 @@ public class CrazyNameDialog extends DialogWrapper {
         return north;
     }
 
-    public JPanel initCenter() {
+    public JScrollPane initCenter() {
         after.setLineWrap(true);
         after.setColumns(45);
         after.setRows(13);
         after.setEditable(false);
         after.setFont(new Font("微软雅黑",Font.PLAIN, 16));
-        center.add(after);
+        center.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        center.setViewportView(after);
         return center;
     }
 

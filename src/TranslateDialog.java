@@ -2,7 +2,6 @@ import com.intellij.idea.IdeaLogger;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import kotlin.text.Regex;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,10 +17,10 @@ public class TranslateDialog extends DialogWrapper {
     Logger ins = IdeaLogger.getInstance(TranslateAction.class);
     private JPanel north = new JPanel();
 
-    private JPanel center = new JPanel();
+    private JScrollPane center = new JScrollPane();
     private JLabel label = new JLabel();
 
-    private JTextField input = new JTextField();
+    public JTextField input = new JTextField();
 
     JTextArea after = new JTextArea("");
 
@@ -44,7 +43,7 @@ public class TranslateDialog extends DialogWrapper {
             }
         });
 
-        addKeyListener(new KeyListener() {
+        this.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
 
@@ -55,6 +54,12 @@ public class TranslateDialog extends DialogWrapper {
                 if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
                     close(1);
                 }
+
+                if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+                    input.requestFocus();
+                    input.transferFocus();
+                    input.grabFocus();
+                }
             }
 
             @Override
@@ -62,7 +67,12 @@ public class TranslateDialog extends DialogWrapper {
 
             }
         });
+
+
     }
+
+
+
 
     public TranslateDialog(@Nullable Project project) {
         super(project);
@@ -95,6 +105,7 @@ public class TranslateDialog extends DialogWrapper {
         return initSouth();
     }
 
+
     public static void main(String[] args) {
         String s = " gums a ";
         String s1 = s.replaceAll("[^a-z ]", "");
@@ -114,13 +125,14 @@ public class TranslateDialog extends DialogWrapper {
         return north;
     }
 
-    public JPanel initCenter() {
+    public JScrollPane initCenter() {
         after.setLineWrap(true);
         after.setColumns(45);
         after.setRows(13);
         after.setEditable(false);
         after.setFont(new Font("微软雅黑",Font.PLAIN, 16));
-        center.add(after);
+        center.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        center.setViewportView(after);
         return center;
     }
 
